@@ -12,7 +12,7 @@ import example.sph.blue.blue.BlueManager;
 
 public class DemoActivity extends BlueConnStateBaseActivity {
 
-    private BlueManager blueManager;
+    private BlueManager mBlueManager;
     private TextView tv;
 
     @Override
@@ -20,15 +20,15 @@ public class DemoActivity extends BlueConnStateBaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        blueManager = BlueManager.getInstance();
+        mBlueManager = BlueManager.getInstance();
 
         tv = (TextView) findViewById(R.id.tv);
         tv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (null != getIntent() && "123".equalsIgnoreCase(getIntent().getAction())) {
-                    blueManager.setMode(BlueConfig.MODE_LE);
-                    blueManager.reset("A4:D5:78:0E:4A:0B");
+                    mBlueManager.setMode(BlueConfig.MODE_LE);
+                    mBlueManager.reset("A4:D5:78:0E:4A:0B");
                 } else {
                     startActivity(new Intent(DemoActivity.this, DemoActivity.class).setAction("123"));
                 }
@@ -39,12 +39,12 @@ public class DemoActivity extends BlueConnStateBaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (null != blueManager) {
+        if (null != mBlueManager) {
             if (null != getIntent() && "123".equalsIgnoreCase(getIntent().getAction())) {
-                blueManager.close(false, true);
+                mBlueManager.close(false, true);
             } else {
-                blueManager.close();
-                blueManager.clearNotification();
+                mBlueManager.close();
+                mBlueManager.clearNotification();
             }
         }
     }
