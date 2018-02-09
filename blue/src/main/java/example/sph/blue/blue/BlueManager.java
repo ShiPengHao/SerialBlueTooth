@@ -348,7 +348,7 @@ public class BlueManager {
         mBlueConn = null;
         mScanEndMillis = 0;
         ConnStatus.set(STATUS_UN_REQUEST);
-        BlueLog.i(TAG, "reset member v");
+        BlueLog.i(TAG, "reset member variables");
     }
 
     /**
