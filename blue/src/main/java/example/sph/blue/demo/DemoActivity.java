@@ -28,7 +28,7 @@ public class DemoActivity extends BlueConnStateBaseActivity {
             public void onClick(View v) {
                 if (null != getIntent() && "123".equalsIgnoreCase(getIntent().getAction())) {
                     mBlueManager.setMode(BlueConfig.MODE_LE);
-                    mBlueManager.reset("A4:D5:78:0E:4A:0B");
+                    mBlueManager.connect("A4:D5:78:0E:4A:0B");
                 } else {
                     startActivity(new Intent(DemoActivity.this, DemoActivity.class).setAction("123"));
                 }

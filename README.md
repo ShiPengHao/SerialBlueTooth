@@ -32,7 +32,7 @@
 3. 设置模式（默认经典蓝牙）和目标设备的蓝牙MAC。暂时只支持按MAC来自动搜索设备并连接，如需要显示搜索列表或者按照设备名称，请自行扩展，我毕竟还是懒~
 > `mBlueManager.setMode(BlueConfig.MODE_LE);`
 
-> `mBlueManager.reset("A4:D5:78:0E:4A:0B");`
+> `mBlueManager.connect("A4:D5:78:0E:4A:0B");`
 
 4. 判断蓝牙通道的状态，开始读写数据。注意，**读取时要传入协议标识接口的实现**。
 > ```

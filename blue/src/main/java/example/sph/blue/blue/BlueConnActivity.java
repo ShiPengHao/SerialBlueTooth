@@ -62,11 +62,10 @@ public class BlueConnActivity extends BlueConnStateBaseActivity {
         if (stateCode < 0) {
             return;
         }
+        tv.setText(msg);
         BlueLog.i(TAG, msg);
         if (stateCode < BlueManager.STATUS_SEARCHING) {
             finish();
-        } else {
-            tv.setText(msg);
         }
     }
 

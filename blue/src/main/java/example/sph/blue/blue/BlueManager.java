@@ -271,7 +271,7 @@ public class BlueManager {
      *
      * @param mac 目标蓝牙mac
      */
-    public synchronized void reset(@NonNull String mac) {
+    public synchronized void connect(@NonNull String mac) {
         // 当前设备已经建立连接，无需再次操作
         if (isConnect() && mac.equalsIgnoreCase(mRemoteMac)) {
             return;
