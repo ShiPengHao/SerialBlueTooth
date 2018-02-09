@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">blue</string>
+    <string name="blue_ask_cancel_bt_conn">取消蓝牙连接？</string>
+    <string name="blue_illegal_bt_mac">蓝牙地址有误</string>
+    <string name="blue_illegal_service_intent_params">绑定服务时传递的参数异常</string>
+    <string name="blue_status">蓝牙连接状态</string>
+    <string name="blue_conn_status_connect">连接成功！</string>
+    <string name="blue_conn_status_disconnect">连接失败！</string>
+    <string name="blue_conn_status_paired_error">配对失败！</string>
+    <string name="blue_conn_status_searching">正在搜索指定的蓝牙设备！</string>
+    <string name="blue_conn_status_no_device">没有搜索到设备！</string>
+    <string name="blue_conn_status_pairing">正在与经典蓝牙设备配对！</string>
+    <string name="blue_conn_status_le_get_service">正在与低功耗蓝牙设备获取服务！</string>
+</resources>
