@@ -49,7 +49,7 @@ public class BlueManager {
     /**
      * 蓝牙adapter
      */
-    private final BluetoothAdapter BlueAdapter = BluetoothAdapter.getDefaultAdapter();
+    private final BluetoothAdapter Blue_Adapter = BluetoothAdapter.getDefaultAdapter();
     /**
      * 目标蓝牙设备mac地址
      */
@@ -61,7 +61,7 @@ public class BlueManager {
     /**
      * 蓝牙广播接收器
      */
-    private final BroadcastReceiver BlueReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver Blue_Receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
@@ -70,17 +70,17 @@ public class BlueManager {
                 BlueLog.i(TAG, "ACTION_FOUND:" + device.getName() + "," + device.getAddress());
                 if (mRemoteMac.equalsIgnoreCase(device.getAddress())) {
                     connectDevice(device);
-                    BlueAdapter.cancelDiscovery();
+                    Blue_Adapter.cancelDiscovery();
                 }
             } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equalsIgnoreCase(action)) {
                 BlueLog.i(TAG, "ACTION_DISCOVERY_FINISHED");
-                if (BlueAdapter.isEnabled() && null == mBlueConn) {
+                if (Blue_Adapter.isEnabled() && null == mBlueConn) {
                     if (System.currentTimeMillis() > mScanEndMillis) {
                         // 继续扫描
                         scan();
                     } else {
-                        ConnListenerProxy.onDiscoveryFailed(BlueAdapter.getRemoteDevice(mRemoteMac));
-                        BlueAdapter.cancelDiscovery();
+                        Conn_Listener_Proxy.onDiscoveryFailed(Blue_Adapter.getRemoteDevice(mRemoteMac));
+                        Blue_Adapter.cancelDiscovery();
                     }
                 }
             } else if (BluetoothAdapter.ACTION_STATE_CHANGED.equalsIgnoreCase(action)) {
@@ -94,7 +94,7 @@ public class BlueManager {
                 } else if (BluetoothAdapter.STATE_OFF == state) {
                     BlueLog.i(TAG, "STATE_OFF");
                     if (null != mBlueConn) {
-                        ConnListenerProxy.onDisconnect(BlueAdapter.getRemoteDevice(mRemoteMac));
+                        Conn_Listener_Proxy.onDisconnect(Blue_Adapter.getRemoteDevice(mRemoteMac));
                     }
                 }
             } else if (BluetoothDevice.ACTION_BOND_STATE_CHANGED.equalsIgnoreCase(action)) {
@@ -123,13 +123,13 @@ public class BlueManager {
     /**
      * 处理蓝牙连接状态回调的Handler，应该在主线程中初始化
      */
-    private final Handler BlueCallbackHandler = new Handler(new Handler.Callback() {
+    private final Handler Blue_Callback_Handler = new Handler(new Handler.Callback() {
         @Override
         public boolean handleMessage(Message message) {
             String msg = (String) message.obj;
             BlueLog.i(TAG, "handler message:" + msg);
             notifyConnState(message.what, msg);
-            ConnStatus.set(message.what);
+            Conn_Status.set(message.what);
             if (message.what != STATUS_CONNECT) {
                 close();
             }
@@ -140,7 +140,7 @@ public class BlueManager {
     /**
      * 蓝牙服务监听代理
      */
-    private final BlueConnListener ConnListenerProxy = new BlueConnListener() {
+    private final BlueConnListener Conn_Listener_Proxy = new BlueConnListener() {
 
         /**
          * 拿到蓝牙连接状态变化之后，设置状态并弹出通知，并发送广播
@@ -151,7 +151,7 @@ public class BlueManager {
             Message message = Message.obtain();
             message.what = status;
             message.obj = msg;
-            BlueCallbackHandler.sendMessage(message);
+            Blue_Callback_Handler.sendMessage(message);
         }
 
         @Override
@@ -206,7 +206,7 @@ public class BlueManager {
     /**
      * 状态
      */
-    private final AtomicInteger ConnStatus = new AtomicInteger(STATUS_UN_REQUEST);
+    private final AtomicInteger Conn_Status = new AtomicInteger(STATUS_UN_REQUEST);
 
     /**
      * 单例
@@ -221,16 +221,16 @@ public class BlueManager {
     /**
      * 低功耗蓝牙搜索回调
      */
-    private final BluetoothAdapter.LeScanCallback LeScanCallback = new BluetoothAdapter.LeScanCallback() {
+    private final BluetoothAdapter.LeScanCallback Le_Scan_Callback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            BlueLog.i(TAG, "LeScanCallback::onLeScan, device MAC:" + device.getAddress());
+            BlueLog.i(TAG, "Le_Scan_Callback::onLeScan, device MAC:" + device.getAddress());
             if (null != mRemoteMac && mRemoteMac.equalsIgnoreCase(device.getAddress())) {
                 connectDevice(device);
-                BlueAdapter.stopLeScan(this);
+                Blue_Adapter.stopLeScan(this);
             } else if (System.currentTimeMillis() > mScanEndMillis) {
-                ConnListenerProxy.onDiscoveryFailed(BlueAdapter.getRemoteDevice(mRemoteMac));
-                BlueAdapter.stopLeScan(this);
+                Conn_Listener_Proxy.onDiscoveryFailed(Blue_Adapter.getRemoteDevice(mRemoteMac));
+                Blue_Adapter.stopLeScan(this);
             }
         }
     };
@@ -292,10 +292,10 @@ public class BlueManager {
         BlueLog.i(TAG, "open address:" + mRemoteMac);
         registerBTReceiver();
         // 如果蓝牙已经启动，则搜索目标设备，否则开启蓝牙，在状态回调中开始搜索设备
-        if (BlueAdapter.isEnabled()) {
+        if (Blue_Adapter.isEnabled()) {
             scan();
         } else {
-            BlueAdapter.enable();
+            Blue_Adapter.enable();
         }
     }
 
@@ -314,10 +314,10 @@ public class BlueManager {
      */
     public void close(boolean closeBlue, boolean showTip) {
         BlueLog.i(TAG, "close");
-        BlueCallbackHandler.removeCallbacksAndMessages(null);
+        Blue_Callback_Handler.removeCallbacksAndMessages(null);
         if (null == mRemoteMac) {
             BlueLog.i(TAG, "manager had been closed , return");
-            ConnStatus.set(STATUS_UN_REQUEST);
+            Conn_Status.set(STATUS_UN_REQUEST);
             return;
         }
         if (showTip) {
@@ -326,28 +326,28 @@ public class BlueManager {
         }
         BlueLog.i(TAG, "close address:" + mRemoteMac);
         BlueLog.i(TAG, "unregisterReceiver");
-        mContext.unregisterReceiver(BlueReceiver);
+        mContext.unregisterReceiver(Blue_Receiver);
         if (null != mBlueConn) {
             BlueLog.i(TAG, "unbindService");
             mContext.unbindService(mBlueConn);
         }
-        if (BlueAdapter.isDiscovering()) {
+        if (Blue_Adapter.isDiscovering()) {
             BlueLog.i(TAG, "cancelDiscovery");
-            BlueAdapter.cancelDiscovery();
+            Blue_Adapter.cancelDiscovery();
         }
         if (mMode == BlueConfig.MODE_LE) {
             BlueLog.i(TAG, "stopLeScan");
-            BlueAdapter.stopLeScan(LeScanCallback);
+            Blue_Adapter.stopLeScan(Le_Scan_Callback);
         }
         if (closeBlue) {
             BlueLog.i(TAG, "disable blue");
-            BlueAdapter.disable();
+            Blue_Adapter.disable();
         }
         mRemoteMac = null;
         mBlueBinder = null;
         mBlueConn = null;
         mScanEndMillis = 0;
-        ConnStatus.set(STATUS_UN_REQUEST);
+        Conn_Status.set(STATUS_UN_REQUEST);
         BlueLog.i(TAG, "reset member variables");
     }
 
@@ -357,7 +357,7 @@ public class BlueManager {
      * @return 状态
      */
     public int getStatus() {
-        return ConnStatus.get();
+        return Conn_Status.get();
     }
 
     /**
@@ -366,7 +366,7 @@ public class BlueManager {
      * @return true是
      */
     public boolean isConnect() {
-        return ConnStatus.get() == STATUS_CONNECT;
+        return Conn_Status.get() == STATUS_CONNECT;
     }
 
     /**
@@ -439,7 +439,7 @@ public class BlueManager {
             byte[] head = mBlueBinder.readBytes(protocolSign.getSignLen());
             if (null == head) {
                 if (isConnect()) {
-                    ConnListenerProxy.onDisconnect(BlueAdapter.getRemoteDevice(mRemoteMac));
+                    Conn_Listener_Proxy.onDisconnect(Blue_Adapter.getRemoteDevice(mRemoteMac));
                 }
                 BlueLog.i(TAG, "read empty head, return");
                 return null;
@@ -449,7 +449,7 @@ public class BlueManager {
                 byte[] body = mBlueBinder.readBytes(len);
                 if (null == body) {
                     if (isConnect()) {
-                        ConnListenerProxy.onDisconnect(BlueAdapter.getRemoteDevice(mRemoteMac));
+                        Conn_Listener_Proxy.onDisconnect(Blue_Adapter.getRemoteDevice(mRemoteMac));
                     }
                     BlueLog.i(TAG, "read empty body, return");
                     return null;
@@ -467,7 +467,7 @@ public class BlueManager {
                 }
             } else if (isConnect()) {
                 BlueLog.i(TAG, "head unchecked, disconnect channel. head:" + DataFormatter.bytes2HexString(head));
-                ConnListenerProxy.onDisconnect(BlueAdapter.getRemoteDevice(mRemoteMac));
+                Conn_Listener_Proxy.onDisconnect(Blue_Adapter.getRemoteDevice(mRemoteMac));
             } else {
                 BlueLog.i(TAG, "head unchecked, return. head:" + DataFormatter.bytes2HexString(head));
             }
@@ -487,7 +487,7 @@ public class BlueManager {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         filter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         filter.setPriority(Integer.MAX_VALUE);
-        mContext.registerReceiver(BlueReceiver, filter);
+        mContext.registerReceiver(Blue_Receiver, filter);
     }
 
     /**
@@ -564,18 +564,18 @@ public class BlueManager {
         }
         if (mMode == BlueConfig.MODE_CLASSIC) {
             try {
-                BlueAdapter.cancelDiscovery();
+                Blue_Adapter.cancelDiscovery();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            BlueAdapter.startDiscovery();
+            Blue_Adapter.startDiscovery();
         } else if (mMode == BlueConfig.MODE_LE) {
             try {
-                BlueAdapter.stopLeScan(LeScanCallback);
+                Blue_Adapter.stopLeScan(Le_Scan_Callback);
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            BlueAdapter.startLeScan(LeScanCallback);
+            Blue_Adapter.startLeScan(Le_Scan_Callback);
         }
         Intent intent = new Intent(BLUE_STATE_ACTION);
         LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent.putExtra(BlueConfig.EXTRA_KEY_DES, mContext.getString(R.string.blue_conn_status_searching)).putExtra(BlueConfig.EXTRA_KEY_STATUS, STATUS_SEARCHING));
@@ -603,14 +603,14 @@ public class BlueManager {
                     } else {
                         BlueLog.i(TAG, "get service binder");
                         mBlueBinder = (BlueService.BlueSocketBinder) service;
-                        mBlueBinder.setListener(ConnListenerProxy);
+                        mBlueBinder.setListener(Conn_Listener_Proxy);
                     }
                 }
 
                 @Override
                 public void onServiceDisconnected(ComponentName name) {
                     BlueLog.i(TAG, "onServiceDisconnected");
-                    ConnListenerProxy.onDisconnect(device);
+                    Conn_Listener_Proxy.onDisconnect(device);
                 }
             };
             Intent service = new Intent(mContext, BlueService.class)
