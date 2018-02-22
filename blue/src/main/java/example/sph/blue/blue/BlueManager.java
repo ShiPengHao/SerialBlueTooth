@@ -405,6 +405,7 @@ public class BlueManager {
     @WorkerThread
     public synchronized boolean write(byte[] bytes) {
         if (null != mBlueBinder) {// 服务状态正常
+            // 尝试最多发送3次
             int count = 1;
             do {
                 if (isConnect()) {// 蓝牙通道正常

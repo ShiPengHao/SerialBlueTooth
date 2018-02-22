@@ -1,4 +1,4 @@
-# BlueToothCom
+# SerialBlueTooth
 蓝牙串口形式的通讯框架。支持的工作方式仅限于串行发送接收的形式，包含经典蓝牙和低功耗蓝牙（BLE）两种模式。
 
 一、blue包中为蓝牙通讯框架，demo包中为使用demo。

@@ -23,6 +23,7 @@ public class App extends Application {
             return;
         }
         LeakCanary.install(this);
+        // 初始化蓝牙
         BlueManager.init(this);
     }
 }
